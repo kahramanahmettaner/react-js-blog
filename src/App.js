@@ -12,6 +12,8 @@ import { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import api from './api/posts'
 import EditPost from './routes/EditPost';
+import useWindowSize from './hooks/useWindowSize';
+import useAxiosFetch from './hooks/useAxiosFetch';
 
 function App() {
   const [posts, setPosts] = useState([]);
@@ -22,31 +24,15 @@ function App() {
   const [editTitle, setEditTitle] = useState('');
   const [editBody, setEditBody] = useState('');
   const history = useHistory();
+  const { width } = useWindowSize();
+
+  const { data, fetchError, isLoading } = useAxiosFetch('http://localhost:3500/posts');
+  
+  useEffect(() => {
+    setPosts(data);
+  }, [data])
 
   useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        const response = await api.get('/posts');
-        /* if (response && response.data) */
-        setPosts(response.data); // axios will automatically catch anything outside the 200-range 
-      } catch (err) {
-        // from axios documentation
-        if (err.response) {
-          // Not in the 200 response range
-          console.log(err.response.data);
-          console.log(err.response.status);
-          console.log(err.response.headers);
-        } else {
-          console.log(`Error: ${err.message}`);
-        }
-
-      }
-    }
-
-    fetchPosts();
-  }, [])
-
-  useEffect( () => {
     const filteredResults = posts.filter( post => 
       ((post.body).toLowerCase()).includes(search.toLowerCase())
       || ((post.title).toLowerCase()).includes(search.toLowerCase())
@@ -100,12 +86,16 @@ function App() {
 
   return (
     <div className="App">
-      <Header title="React JS Blog"/>
+      <Header title="React JS Blog" width={width}/>
       <Nav search={search} setSearch={setSearch}/>
 
       <Switch>
         <Route exact path="/"> 
-          <Home posts={searchResults}/>
+          <Home 
+            posts={searchResults}
+            fetchError={fetchError}
+            isLoading={isLoading}
+          />
         </Route> 
         <Route exact path="/post">
           <NewPost
