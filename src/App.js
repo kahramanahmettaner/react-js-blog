@@ -11,7 +11,7 @@ import { Route, Switch, useHistory } from 'react-router-dom'
 import { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import api from './api/posts'
-import EditPost from './EditPost';
+import EditPost from './routes/EditPost';
 
 function App() {
   const [posts, setPosts] = useState([]);
