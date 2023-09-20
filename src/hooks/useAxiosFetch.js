@@ -39,7 +39,7 @@ const useAxiosFetch = (dataUrl) => {
 
         return cleanUp;
     }, [dataUrl])
-
+    
     return { data, fetchError, isLoading }
 }
 
